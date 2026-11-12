@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite Quiver Advisor & Windrose</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --success-bg: #065f46;
+            --success-border: #10b981;
+            --warning-bg: #854d0e;
+            --border-color: #334155;
+            --live-bg: #0f2942;
+            --live-border: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+        }
+
+        .weight-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .weight-val {
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        select, input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            height: 8px;
+            padding: 0;
+            background: #0f172a;
+            border-radius: 5px;
+            accent-color: var(--accent-blue);
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        /* Layout-Container für Live-Box + Windrose */
+        .live-section {
+            background: var(--live-bg);
+            border: 1px solid var(--live-border);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .live-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .live-title {
+            font-size: 0.8rem;
+            color: #38bdf8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .live-values {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        /* SVG Windrose Styling */
+        .compass-container {
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0b1d31;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .compass-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .compass-arrow {
+            transition: transform 0.6s ease-out;
+            transform-origin: 50px 50px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .result-box.normal {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .result-box.warning {
+            background: var(--warning-bg);
+            border: 1px solid #f59e0b;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-details {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .result-details div {
+            margin-bottom: 6px;
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Kite Advisor</h1>
+            <p>F-One Bandit 18 (14 / 10 / 8)</p>
+            <span class="badge">Open-Meteo API & Windrose</span>
+        </div>
+
+        <div class="form-group">
+            <div class="weight-slider-header">
+                <label for="weight">Fahrergewicht:</label>
+                <span class="weight-val" id="weightDisplay">98 kg</span>
+            </div>
+            <input type="range" id="weight" min="60" max="120" value="98" oninput="updateWeight(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label for="spotSelect">Spot auswählen:</label>
+            <select id="spotSelect" onchange="fetchSpotWind()">
+                <option value="el_gouna" data-lat="27.3942" data-lon="33.6783">El Gouna (Ägypten)</option>
+                <option value="giftun" data-lat="27.2342" data-lon="33.9211">Giftun Island (Ägypten)</option>
+                <option value="hvide_sande" data-lat="56.0075" data-lon="8.1284">Hvide Sande (Ringkøping Fjord)</option>
+                <option value="pelzerhaken" data-lat="54.0908" data-lon="10.8711">Pelzerhaken (Ostsee)</option>
+            </select>
+        </div>
+
+        <!-- Live Wind & Windrose Section -->
+        <div class="live-section">
+            <div class="live-info">
+                <div class="live-title">
+                    <span>📡 Live-Daten</span>
+                    <span id="liveStatus" style="font-size:0.7rem; font-weight:normal; color:#94a3b8;">Lade...</span>
+                </div>
+                <div class="live-values">
+                    <div>Wind: <span id="liveWind" style="color:#38bdf8;">-- kn</span></div>
+                    <div>Böen: <span id="liveGusts" style="color:#f43f5e;">-- kn</span></div>
+                    <div style="font-size:0.85rem; color:#94a3b8; font-weight:normal; margin-top:2px;">
+                        Richtung: <span id="liveDirText" style="color:#f8fafc; font-weight:bold;">--</span> (<span id="liveDirDeg">--°</span>)
+                    </div>
+                </div>
+            </div>
+
+            <!-- SVG Windrose Compass -->
+            <div class="compass-container">
+                <svg class="compass-svg" viewBox="0 0 100 100">
+                    <!-- Kompassring & Himmelsrichtungen -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="2"/>
+                    <text x="50" y="16" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">N</text>
+                    <text x="88" y="54" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">O</text>
+                    <text x="50" y="92" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">S</text>
+                    <text x="12" y="54" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">W</text>
+                    
+                    <!-- Windpfeil mit deutlichem Kontrast & klarer Nadel -->
+                    <g id="compassArrow" class="compass-arrow" transform="rotate(0, 50, 50)">
+                        <!-- Pfeilspitze (weht in Windrichtung) -->
+                        <polygon points="50,12 40,36 47,32 50,82 53,32 60,36" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="wind">Grundwind (Knoten):</label>
+            <input type="number" id="wind" placeholder="Wird automatisch gefüllt..." min="0" max="60">
+        </div>
+
+        <div class="form-group">
+            <label for="gusts">Böen (Knoten):</label>
+            <input type="number" id="gusts" placeholder="Wird automatisch gefüllt..." min="0" max="60">
+        </div>
+
+        <div class="btn-row">
+            <button onclick="calculateQuiver()">Setup berechnen</button>
+            <button class="btn-secondary" onclick="fetchSpotWind()">Wind aktualisieren</button>
+        </div>
+
+        <div id="resultBox" class="result-box">
+            <div id="recTitle" class="result-title"></div>
+            <div class="result-details">
+                <div><strong>Kite:</strong> <span id="recKite"></span></div>
+                <div><strong>Board:</strong> <span id="recBoard"></span></div>
+                <div id="recNote" class="note"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            fetchSpotWind();
+        };
+
+        function updateWeight(val) {
+            document.getElementById('weightDisplay').innerText = val + ' kg';
+        }
+
+        // Grad in Himmelsrichtung umrechnen (N, NO, O, SO, S, SW, W, NW)
+        function degToCompass(num) {
+            const val = Math.floor((num / 22.5) + 0.5);
+            const arr = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSO", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+            return arr[(val % 16)];
+        }
+
+        async function fetchSpotWind() {
+            const spotSelect = document.getElementById('spotSelect');
+            const selectedOption = spotSelect.options[spotSelect.selectedIndex];
+            const lat = selectedOption.getAttribute('data-lat');
+            const lon = selectedOption.getAttribute('data-lon');
+
+            const liveStatus = document.getElementById('liveStatus');
+            const liveWind = document.getElementById('liveWind');
+            const liveGusts = document.getElementById('liveGusts');
+            const liveDirText = document.getElementById('liveDirText');
+            const liveDirDeg = document.getElementById('liveDirDeg');
+            const compassArrow = document.getElementById('compassArrow');
+            const windInput = document.getElementById('wind');
+            const gustsInput = document.getElementById('gusts');
+
+            liveStatus.innerText = "Lade...";
+            liveStatus.style.color = "#94a3b8";
+
+            try {
+                // Open-Meteo API Aufruf inklusive Windrichtung (wind_direction_10m)
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m&wind_speed_unit=kn`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.current) {
+                    const currentWind = Math.round(data.current.wind_speed_10m);
+                    const currentGusts = Math.round(data.current.wind_gusts_10m);
+                    const windDirDeg = Math.round(data.current.wind_direction_10m);
+
+                    liveWind.innerText = currentWind + " kn";
+                    liveGusts.innerText = currentGusts + " kn";
+                    liveDirDeg.innerText = windDirDeg + "°";
+                    liveDirText.innerText = degToCompass(windDirDeg);
+
+                    // Meteorologischer Wind kommt AUS Grad -> Pfeil zeigt in die Richtung, in die er bläst (+ 180 Grad)
+                    const arrowRotation = (windDirDeg + 180) % 360;
+                    compassArrow.setAttribute('transform', `rotate(${arrowRotation}, 50, 50)`);
+
+                    windInput.value = currentWind;
+                    gustsInput.value = currentGusts;
+
+                    liveStatus.innerText = "Aktuell";
+                    liveStatus.style.color = "#10b981";
+                } else {
+                    throw new Error("Keine Daten vorhanden");
+                }
+            } catch (error) {
+                console.error("Fehler beim Abrufen der Winddaten:", error);
+                liveStatus.innerText = "Fehler!";
+                liveStatus.style.color = "#f43f5e";
+                liveWind.innerText = "N/A";
+                liveGusts.innerText = "N/A";
+                liveDirText.innerText = "--";
+                liveDirDeg.innerText = "--°";
+            }
+        }
+
+        function calculateQuiver() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const windInput = document.getElementById('wind').value;
+            const gustsInput = document.getElementById('gusts').value;
+
+            const resultBox = document.getElementById('resultBox');
+            const recTitle = document.getElementById('recTitle');
+            const recKite = document.getElementById('recKite');
+            const recBoard = document.getElementById('recBoard');
+            const recNote = document.getElementById('recNote');
+
+            if (!windInput || windInput < 0) {
+                alert("Bitte gib einen gültigen Windwert ein!");
+                return;
+            }
+
+            const wind = parseFloat(windInput);
+            const gusts = gustsInput ? parseFloat(gustsInput) : wind;
+
+            const weightDelta = weight - 98;
+            const effectiveWind = wind - (weightDelta * 0.18);
+            const effectiveGusts = gusts - (weightDelta * 0.18);
+
+            let kite = "";
+            let board = "";
+            let note = "";
+            let isWarning = false;
+
+            if (effectiveWind < 10) {
+                kite = "Kein Kite empfohlen";
+                board = "F-One One (150/48)";
+                note = `Zu wenig Wind für ${weight} kg. Zeit für Chillen am Ufer!`;
+                isWarning = true;
+            } else if (effectiveWind >= 10 && effectiveWind < 13) {
+                kite = "14 qm Bandit 18";
+                board = "F-One One (150/48)";
+                note = `Leichtwind-Modus bei ${weight} kg! Großes Board nutzen, um früh ins Gleiten zu kommen und Höhe zu halten.`;
+            } else if (effectiveWind >= 13 && effectiveWind < 16) {
+                if (effectiveGusts >= 18) {
+                    kite = "10 qm Bandit 18";
+                    board = "F-One Trax (137/42)";
+                    note = "Der Wind frischt auf! Der 10er fährt sich bei Böen über 18 kn spürbar sportlicher und feinfühliger als der 14er.";
+                } else {
+                    kite = "14 qm Bandit 18";
+                    board = "F-One Trax (137/42)";
+                    note = "Gemütliches Cruisen mit dem Trax. Wenn es in Böen schiebt, aktiv depowern.";
+                }
+            } else if (effectiveWind >= 16 && effectiveWind < 21) {
+                kite = "10 qm Bandit 18";
+                board = "F-One Trax (137/42)";
+                note = "SWEET-SPOT! Ideale Bedingungen für deine sauberen Sprünge und Toeside-Turns.";
+            } else if (effectiveWind >= 21 && effectiveWind < 27) {
+                kite = "8 qm Bandit 18";
+                board = "F-One Trax (137/42)";
+                note = "Starkwind-Action! Volle Kontrolle und Sicherheit bei Böen.";
+            } else {
+                kite = "8 qm Bandit 18 (stark überpowert!)";
+                board = "F-One Trax (137/42)";
+                note = `Achtung: Sehr starke Bedingungen für ${weight} kg mit 8 qm. Nur für erfahrene Starkwind-Sessions!`;
+                isWarning = true;
+            }
+
+            recTitle.innerText = isWarning ? "⚠️ Warnung / Grenzbereich" : "🎯 Deine Setup-Empfehlung";
+            recKite.innerText = kite;
+            recBoard.innerText = board;
+            recNote.innerText = note;
+
+            resultBox.className = "result-box " + (isWarning ? "warning" : "normal");
+            resultBox.style.display = "block";
+        }
+    </script>
+</body>
+</html>

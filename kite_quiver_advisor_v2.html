@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite Quiver Advisor (Dynamisch)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --success-bg: #065f46;
+            --success-border: #10b981;
+            --warning-bg: #854d0e;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+        }
+
+        .weight-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .weight-val {
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 5px;
+            outline: none;
+            accent-color: var(--accent-blue);
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .result-box.normal {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .result-box.warning {
+            background: var(--warning-bg);
+            border: 1px solid #f59e0b;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-details {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .result-details div {
+            margin-bottom: 6px;
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Kite Advisor</h1>
+            <p>F-One Bandit 18 (14 / 10 / 8)</p>
+            <span class="badge" id="headerBadge">Quiver: 14 / 10 / 8 m²</span>
+        </div>
+
+        <div class="form-group">
+            <div class="weight-slider-header">
+                <label for="weight">Fahrergewicht:</label>
+                <span class="weight-val" id="weightDisplay">98 kg</span>
+            </div>
+            <input type="range" id="weight" min="60" max="120" value="98" oninput="updateWeight(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label for="wind">Grundwind (Knoten):</label>
+            <input type="number" id="wind" placeholder="z. B. 16" min="0" max="60">
+        </div>
+
+        <div class="form-group">
+            <label for="gusts">Böen (Knoten) [optional]:</label>
+            <input type="number" id="gusts" placeholder="z. B. 20" min="0" max="60">
+        </div>
+
+        <button onclick="calculateQuiver()">Empfehlung berechnen</button>
+
+        <div id="resultBox" class="result-box">
+            <div id="recTitle" class="result-title"></div>
+            <div class="result-details">
+                <div><strong>Kite:</strong> <span id="recKite"></span></div>
+                <div><strong>Board:</strong> <span id="recBoard"></span></div>
+                <div id="recNote" class="note"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateWeight(val) {
+            document.getElementById('weightDisplay').innerText = val + ' kg';
+        }
+
+        function calculateQuiver() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const windInput = document.getElementById('wind').value;
+            const gustsInput = document.getElementById('gusts').value;
+            const resultBox = document.getElementById('resultBox');
+            const recTitle = document.getElementById('recTitle');
+            const recKite = document.getElementById('recKite');
+            const recBoard = document.getElementById('recBoard');
+            const recNote = document.getElementById('recNote');
+
+            if (!windInput || windInput < 0) {
+                alert("Bitte gib einen gültigen Windwert ein!");
+                return;
+            }
+
+            const wind = parseFloat(windInput);
+            const gusts = gustsInput ? parseFloat(gustsInput) : wind;
+
+            // Gewichtskorrekturfaktor relativ zum 98kg Baseline-Modell
+            // Pro 10 kg Abweichung verschiebt sich die Windrange um ca. 1.5 - 2 Knoten
+            const weightDelta = weight - 98;
+            const effectiveWind = wind - (weightDelta * 0.18);
+            const effectiveGusts = gusts - (weightDelta * 0.18);
+
+            let kite = "";
+            let board = "";
+            let note = "";
+            let isWarning = false;
+
+            if (effectiveWind < 10) {
+                kite = "Kein Kite empfohlen";
+                board = "F-One One (150/48)";
+                note = `Zu wenig Wind für ${weight} kg. Zeit für einen Kaffee am Ufer!`;
+                isWarning = true;
+            } else if (effectiveWind >= 10 && effectiveWind < 13) {
+                kite = "14 qm Bandit 18";
+                board = "F-One One (150/48)";
+                note = `Leichtwind-Modus bei ${weight} kg! Großes Board nutzen, um früh ins Gleiten zu kommen und Höhe zu halten.`;
+            } else if (effectiveWind >= 13 && effectiveWind < 16) {
+                if (effectiveGusts >= 18) {
+                    kite = "10 qm Bandit 18";
+                    board = "F-One Trax (137/42)";
+                    note = "Der Wind frischt auf! Der 10er fährt sich bei den Böen spürbar sportlicher und feinfühliger als der 14er.";
+                } else {
+                    kite = "14 qm Bandit 18";
+                    board = "F-One Trax (137/42)";
+                    note = "Gemütliches Cruisen mit dem Trax. Wenn es in Böen schiebt, aktiv depowern.";
+                }
+            } else if (effectiveWind >= 16 && effectiveWind < 21) {
+                kite = "10 qm Bandit 18";
+                board = "F-One Trax (137/42)";
+                note = "SWEET-SPOT! Ideale Bedingungen für saubere Sprünge und Toeside-Turns.";
+            } else if (effectiveWind >= 21 && effectiveWind < 27) {
+                kite = "8 qm Bandit 18";
+                board = "F-One Trax (137/42)";
+                note = "Starkwind-Action! Volle Kontrolle und Sicherheit bei Böen.";
+            } else {
+                kite = "8 qm Bandit 18 (stark überpowert!)";
+                board = "F-One Trax (137/42)";
+                note = `Achtung: Sehr starke Bedingungen für ${weight} kg mit 8 qm. Nur für erfahrene Starkwind-Sessions!`;
+                isWarning = true;
+            }
+
+            recTitle.innerText = isWarning ? "⚠️ Warnung / Grenzbereich" : "🎯 Deine Setup-Empfehlung";
+            recKite.innerText = kite;
+            recBoard.innerText = board;
+            recNote.innerText = note;
+
+            resultBox.className = "result-box " + (isWarning ? "warning" : "normal");
+            resultBox.style.display = "block";
+        }
+    </script>
+</body>
+</html>

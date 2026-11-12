@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite Quiver Advisor (Universal Config)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --success-bg: #065f46;
+            --success-border: #10b981;
+            --warning-bg: #854d0e;
+            --border-color: #334155;
+            --live-bg: #0f2942;
+            --live-border: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+        }
+
+        .weight-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .weight-val {
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        select, input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            height: 8px;
+            padding: 0;
+            background: #0f172a;
+            border-radius: 5px;
+            accent-color: var(--accent-blue);
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .live-section {
+            background: var(--live-bg);
+            border: 1px solid var(--live-border);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .live-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .live-title {
+            font-size: 0.8rem;
+            color: #38bdf8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .live-values {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        .compass-container {
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0b1d31;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .compass-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .compass-arrow {
+            transition: transform 0.6s ease-out;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .result-box.normal {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .result-box.warning {
+            background: var(--warning-bg);
+            border: 1px solid #f59e0b;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-details {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .result-details div {
+            margin-bottom: 6px;
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1 id="appTitle">Kite Advisor</h1>
+            <p id="appSubtitle">Lade Konfiguration...</p>
+            <span class="badge" id="appBadge">Open-Meteo API & Windrose</span>
+        </div>
+
+        <div class="form-group">
+            <div class="weight-slider-header">
+                <label for="weight">Fahrergewicht:</label>
+                <span class="weight-val" id="weightDisplay">-- kg</span>
+            </div>
+            <input type="range" id="weight" min="50" max="130" value="80" oninput="updateWeight(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label for="spotSelect">Spot auswählen:</label>
+            <select id="spotSelect" onchange="fetchSpotWind()"></select>
+        </div>
+
+        <!-- Live Wind & Windrose Section -->
+        <div class="live-section">
+            <div class="live-info">
+                <div class="live-title">
+                    <span>📡 Live-Daten</span>
+                    <span id="liveStatus" style="font-size:0.7rem; font-weight:normal; color:#94a3b8;">Lade...</span>
+                </div>
+                <div class="live-values">
+                    <div>Wind: <span id="liveWind" style="color:#38bdf8;">-- kn</span></div>
+                    <div>Böen: <span id="liveGusts" style="color:#f43f5e;">-- kn</span></div>
+                    <div style="font-size:0.85rem; color:#94a3b8; font-weight:normal; margin-top:2px;">
+                        Richtung: <span id="liveDirText" style="color:#f8fafc; font-weight:bold;">--</span> (<span id="liveDirDeg">--°</span>)
+                    </div>
+                </div>
+            </div>
+
+            <div class="compass-container">
+                <svg class="compass-svg" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="2"/>
+                    <text x="50" y="16" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">N</text>
+                    <text x="88" y="54" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">O</text>
+                    <text x="50" y="92" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">S</text>
+                    <text x="12" y="54" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">W</text>
+                    
+                    <g id="compassArrow" class="compass-arrow">
+                        <polygon points="50,12 40,36 47,32 50,82 53,32 60,36" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="wind">Grundwind (Knoten):</label>
+            <input type="number" id="wind" placeholder="Wird automatisch gefüllt..." min="0" max="60">
+        </div>
+
+        <div class="form-group">
+            <label for="gusts">Böen (Knoten):</label>
+            <input type="number" id="gusts" placeholder="Wird automatisch gefüllt..." min="0" max="60">
+        </div>
+
+        <div class="btn-row">
+            <button onclick="calculateQuiver()">Setup berechnen</button>
+            <button class="btn-secondary" onclick="fetchSpotWind()">Wind aktualisieren</button>
+        </div>
+
+        <div id="resultBox" class="result-box">
+            <div id="recTitle" class="result-title"></div>
+            <div class="result-details">
+                <div><strong>Kite:</strong> <span id="recKite"></span></div>
+                <div><strong>Board:</strong> <span id="recBoard"></span></div>
+                <div id="recNote" class="note"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // HIER EINFACH ANPASSEN: KONFIGURATION FÜR DEN JEWEILIGEN FAHRER
+        // =====================================================================
+        const APP_CONFIG = {
+            riderName: "Max Mustermann",       // Name oder Titel der App
+            defaultWeight: 82,                 // Standard-Gewicht beim Starten (in kg)
+            referenceWeight: 75,               // Referenzgewicht, für das die untenstehenden Wind-Ranges gelten!
+            weightFactor: 0.18,                // Korrekturfaktor (ca. 1.8 kn pro 10 kg Unterschied)
+
+            // 1. SPOTS DEFINIEREN (Beliebig viele hinzufügbar - GPS-Koordinaten z.B. aus Google Maps)
+            spots: [
+                { name: "St. Peter-Ording (Nordsee)", lat: 54.3039, lon: 8.6042 },
+                { name: "Fehmarn - Gold (Ostsee)", lat: 54.4447, lon: 11.1167 },
+                { name: "Tarifa - Los Lances (Spanien)", lat: 36.0289, lon: -5.6231 },
+                { name: "Brouwersdam (Holland)", lat: 51.7611, lon: 3.8444 }
+            ],
+
+            // 2. BOARDS DEFINIEREN
+            boards: {
+                lightwind: "Duotone Spike 153",
+                standard: "Duotone Jaime 139"
+            },
+
+            // 3. KITE-QUIVER & WINDRANGES DEFINIEREN (bezogen auf das `referenceWeight` oben!)
+            // Wichtig: Die Bereiche (minWind bis maxWind) sollten lückenlos aufeinander aufbauen.
+            quiver: [
+                {
+                    minWind: 0,
+                    maxWind: 11,
+                    kite: "Kein Kite empfohlen",
+                    boardType: "lightwind",
+                    isWarning: true,
+                    note: "Zu wenig Grunddruck für das Gewicht. Lieber Kaffee trinken!"
+                },
+                {
+                    minWind: 11,
+                    maxWind: 15,
+                    kite: "13 qm Duotone Evo",
+                    boardType: "lightwind",
+                    isWarning: false,
+                    note: "Leichtwind-Setup! Großes Board nutzen, um früh Höhe zu laufen."
+                },
+                {
+                    minWind: 15,
+                    maxWind: 21,
+                    kite: "10 qm Duotone Evo",
+                    boardType: "standard",
+                    gustOverride: {
+                        // Optional: Wenn Böen über diesen Wert steigen, wechselt er direkt auf den kleineren Kite
+                        maxGusts: 23,
+                        alternativeKite: "8 qm Duotone Evo",
+                        alternativeNote: "Kräftige Böen! Lieber direkt auf den 8er wechseln für mehr Kontrolle."
+                    },
+                    isWarning: false,
+                    note: "SWEET-SPOT! Perfekt für entspanntes Freeriden und hohe Sprünge."
+                },
+                {
+                    minWind: 21,
+                    maxWind: 29,
+                    kite: "8 qm Duotone Evo",
+                    boardType: "standard",
+                    isWarning: false,
+                    note: "Starkwind-Session! Volle Kontrolle und schnelles Drehverhalten."
+                },
+                {
+                    minWind: 29,
+                    maxWind: 99,
+                    kite: "8 qm Duotone Evo (stark überpowert!)",
+                    boardType: "standard",
+                    isWarning: true,
+                    note: "Achtung Sturm-Bedingungen! Nur für absolute Starkwind-Profis."
+                }
+            ]
+        };
+        // =====================================================================
+        // AB HIER MUSS NICHTS MEHR GEÄNDERT WERDEN (PROGRAMM-LOGIK)
+        // =====================================================================
+
+        window.onload = function() {
+            initApp();
+        };
+
+        function initApp() {
+            // UI mit Konfigurationsdaten füllen
+            document.getElementById('appTitle').innerText = `Kite Advisor (${APP_CONFIG.riderName})`;
+            
+            // Einzigartige Kitenamen aus dem Quiver extrahieren für den Untertitel
+            const uniqueKites = [...new Set(APP_CONFIG.quiver
+                .filter(q => !q.isWarning || q.minWind > 0)
+                .map(q => q.kite.replace(" (stark überpowert!)", ""))
+            )];
+            document.getElementById('appSubtitle').innerText = uniqueKites.join(" / ");
+
+            // Gewicht setzen
+            const weightSlider = document.getElementById('weight');
+            weightSlider.value = APP_CONFIG.defaultWeight;
+            updateWeight(APP_CONFIG.defaultWeight);
+
+            // Spots in Dropdown laden
+            const spotSelect = document.getElementById('spotSelect');
+            spotSelect.innerHTML = "";
+            APP_CONFIG.spots.forEach((spot, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = spot.name;
+                spotSelect.appendChild(option);
+            });
+
+            // Live-Wind für ersten Spot laden
+            fetchSpotWind();
+        }
+
+        function updateWeight(val) {
+            document.getElementById('weightDisplay').innerText = val + ' kg';
+        }
+
+        function degToCompass(num) {
+            const val = Math.floor((num / 22.5) + 0.5);
+            const arr = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSO", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+            return arr[(val % 16)];
+        }
+
+        async function fetchSpotWind() {
+            const spotIndex = document.getElementById('spotSelect').value;
+            const spot = APP_CONFIG.spots[spotIndex];
+            if (!spot) return;
+
+            const liveStatus = document.getElementById('liveStatus');
+            const liveWind = document.getElementById('liveWind');
+            const liveGusts = document.getElementById('liveGusts');
+            const liveDirText = document.getElementById('liveDirText');
+            const liveDirDeg = document.getElementById('liveDirDeg');
+            const compassArrow = document.getElementById('compassArrow');
+            const windInput = document.getElementById('wind');
+            const gustsInput = document.getElementById('gusts');
+
+            liveStatus.innerText = "Lade...";
+            liveStatus.style.color = "#94a3b8";
+
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${spot.lat}&longitude=${spot.lon}&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m&wind_speed_unit=kn`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.current) {
+                    const currentWind = Math.round(data.current.wind_speed_10m);
+                    const currentGusts = Math.round(data.current.wind_gusts_10m);
+                    const windDirDeg = Math.round(data.current.wind_direction_10m);
+
+                    liveWind.innerText = currentWind + " kn";
+                    liveGusts.innerText = currentGusts + " kn";
+                    liveDirDeg.innerText = windDirDeg + "°";
+                    liveDirText.innerText = degToCompass(windDirDeg);
+
+                    const arrowRotation = (windDirDeg + 180) % 360;
+                    compassArrow.style.transform = `rotate(${arrowRotation}deg)`;
+
+                    windInput.value = currentWind;
+                    gustsInput.value = currentGusts;
+
+                    liveStatus.innerText = "Aktuell";
+                    liveStatus.style.color = "#10b981";
+                } else {
+                    throw new Error("Keine Daten vorhanden");
+                }
+            } catch (error) {
+                console.error("Fehler beim Abrufen der Winddaten:", error);
+                liveStatus.innerText = "Fehler!";
+                liveStatus.style.color = "#f43f5e";
+                liveWind.innerText = "N/A";
+                liveGusts.innerText = "N/A";
+                liveDirText.innerText = "--";
+                liveDirDeg.innerText = "--°";
+            }
+        }
+
+        function calculateQuiver() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const windInput = document.getElementById('wind').value;
+            const gustsInput = document.getElementById('gusts').value;
+
+            const resultBox = document.getElementById('resultBox');
+            const recTitle = document.getElementById('recTitle');
+            const recKite = document.getElementById('recKite');
+            const recBoard = document.getElementById('recBoard');
+            const recNote = document.getElementById('recNote');
+
+            if (!windInput || windInput < 0) {
+                alert("Bitte gib einen gültigen Windwert ein!");
+                return;
+            }
+
+            const wind = parseFloat(windInput);
+            const gusts = gustsInput ? parseFloat(gustsInput) : wind;
+
+            // Gewichtskorrektur relativ zum konfigurierten Referenzgewicht (standardmäßig 75kg Werkstabelle)
+            const weightDelta = weight - APP_CONFIG.referenceWeight;
+            const effectiveWind = wind - (weightDelta * APP_CONFIG.weightFactor);
+            const effectiveGusts = gusts - (weightDelta * APP_CONFIG.weightFactor);
+
+            // Passenden Eintrag aus dem Quiver-Array suchen
+            let match = APP_CONFIG.quiver.find(item => effectiveWind >= item.minWind && effectiveWind < item.maxWind);
+            
+            // Fallback auf letzten Eintrag falls extrem starker Wind
+            if (!match) {
+                match = APP_CONFIG.quiver[APP_CONFIG.quiver.length - 1];
+            }
+
+            let chosenKite = match.kite;
+            let chosenNote = match.note;
+            let chosenBoard = APP_CONFIG.boards[match.boardType] || APP_CONFIG.boards.standard;
+            let isWarning = match.isWarning;
+
+            // Prüfen, ob eine Böen-Sonderregel (gustOverride) greift
+            if (match.gustOverride && effectiveGusts >= match.gustOverride.maxGusts) {
+                chosenKite = match.gustOverride.alternativeKite;
+                chosenNote = match.gustOverride.alternativeNote;
+            }
+
+            recTitle.innerText = isWarning ? "⚠️ Warnung / Grenzbereich" : `🎯 Setup-Empfehlung (${weight} kg)`;
+            recKite.innerText = chosenKite;
+            recBoard.innerText = chosenBoard;
+            recNote.innerText = chosenNote;
+
+            resultBox.className = "result-box " + (isWarning ? "warning" : "normal");
+            resultBox.style.display = "block";
+        }
+    </script>
+</body>
+</html>
