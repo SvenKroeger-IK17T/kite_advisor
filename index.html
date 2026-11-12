@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite Quiver Advisor – Auswahl</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #26354d;
+            --accent-blue: #3b82f6;
+            --accent-teal: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+        }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tile {
+            display: block;
+            text-decoration: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tile:hover, .tile:active {
+            transform: translateY(-3px);
+            background: var(--card-hover);
+            border-color: var(--accent-blue);
+        }
+
+        .tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tile-icon {
+            font-size: 1.8rem;
+        }
+
+        .tile-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-modern {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-legacy {
+            background: rgba(14, 165, 233, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .tile h2 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .tile p {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            line-height: 1.45;
+        }
+
+        .tile-footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🪁 Kite Quiver Advisor</h1>
+            <p>Wähle dein Setup für den Live-Windcheck</p>
+        </div>
+
+        <div class="grid">
+            <!-- Kachel 1: Modernes Quiver -->
+            <a href="bandit18.html" class="tile">
+                <div class="tile-header">
+                    <span class="tile-icon">🚀</span>
+                    <span class="tile-badge badge-modern">Aktuelles Setup</span>
+                </div>
+                <h2>Bandit 18 Quiver</h2>
+                <p>14 / 10 / 8 qm • F-One Trax & One • Inkl. Open-Meteo Live-Wind & Windrose</p>
+                <div class="tile-footer">
+                    <span>Rechner öffnen</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Kachel 2: Legacy Quiver -->
+            <a href="legacy.html" class="tile">
+                <div class="tile-header">
+                    <span class="tile-icon">🧭</span>
+                    <span class="tile-badge badge-legacy">Legacy Setup</span>
+                </div>
+                <h2>Bandit 5 & X Quiver</h2>
+                <p>14 & 11 qm (Bandit 5) / 9 qm (Bandit X) • Angepasste Windrange & Traktor-Warnung</p>
+                <div class="tile-footer">
+                    <span>Rechner öffnen</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer-note">
+            Tipp: Über Safari „Zum Home-Bildschirm“ speichern für schnellen Spot-Zugriff.
+        </div>
+    </div>
+
+</body>
+</html>
